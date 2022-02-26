@@ -24,22 +24,45 @@ var _ = Describe("c3os", func() {
 			machine.SSHCommand("df -h > /tmp/disk")
 			machine.SSHCommand("mount > /tmp/mounts")
 			machine.SSHCommand("blkid > /tmp/blkid")
+			if os.Getenv("FLAVOR") == "alpine" {
+				machine.SSHCommand("rc-status > /tmp/rc.log")
 
-			machine.GatherAllLogs(
-				[]string{
-					"c3os-agent",
-					"cos-setup-boot",
-					"cos-setup-network",
-					"c3os",
-					"k3s",
-				},
-				[]string{
-					"/tmp/pods.json",
-					"/tmp/disk",
-					"/tmp/mounts",
-					"/tmp/blkid",
-					"/tmp/events.json",
-				})
+				machine.GatherAllLogs(
+					[]string{
+						"c3os-agent",
+						"cos-setup-boot",
+						"cos-setup-network",
+						"c3os",
+						"k3s",
+					},
+					[]string{
+						"/var/log/c3os.log",
+						"/var/log/c3os-agent.log",
+						"/tmp/pods.json",
+						"/tmp/disk",
+						"/tmp/mounts",
+						"/tmp/blkid",
+						"/tmp/rc.log",
+						"/tmp/events.json",
+					})
+			} else {
+				machine.GatherAllLogs(
+					[]string{
+						"c3os-agent",
+						"cos-setup-boot",
+						"cos-setup-network",
+						"c3os",
+						"k3s",
+					},
+					[]string{
+						"/tmp/pods.json",
+						"/tmp/disk",
+						"/tmp/mounts",
+						"/tmp/blkid",
+						"/tmp/events.json",
+					})
+			}
+
 		}
 	})
 
