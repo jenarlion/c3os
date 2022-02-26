@@ -125,7 +125,7 @@ var _ = Describe("c3os", func() {
 				ContainSubstring("worker"),
 				ContainSubstring("master"),
 				HaveMinMaxRole("master", 1, 1),
-				HaveMinMaxRole("worker", 1, 1),
+				HaveMinMaxRole("worker", 1, 3),
 			))
 		})
 
