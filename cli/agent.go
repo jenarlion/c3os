@@ -54,6 +54,8 @@ func agent(apiAddress, dir string, force bool) error {
 		return err
 	}
 
+	l.Info("Starting c3os agent")
+
 	networkID := "c3os"
 
 	if c.C3OS.NetworkID != "" {

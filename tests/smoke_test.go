@@ -98,29 +98,35 @@ var _ = Describe("c3os", func() {
 		})
 	})
 
-	Context("first-boot", func() {
+	Context("cluster bootstrap", func() {
 		It("configure k3s", func() {
 			_, err := machine.SSHCommand("cat /run/cos/live_mode")
 			Expect(err).To(HaveOccurred())
-			if os.Getenv("FLAVOR") == "alpine" {
-				Eventually(func() string {
-					out, _ := machine.SSHCommand("cat /var/log/c3os-agent.log")
-					return out
-				}, 30*time.Minute, 1*time.Second).Should(
-					Or(
-						ContainSubstring("Configuring k3s-agent"),
-						ContainSubstring("Configuring k3s"),
-					))
-			} else {
-				Eventually(func() string {
-					out, _ := machine.SSHCommand("sudo systemctl status c3os-agent")
-					return out
-				}, 30*time.Minute, 1*time.Second).Should(
-					Or(
-						ContainSubstring("Configuring k3s-agent"),
-						ContainSubstring("Configuring k3s"),
-					))
-			}
+
+			Eventually(func() (out string) {
+				if os.Getenv("FLAVOR") == "alpine" {
+					out, _ = machine.SSHCommand("cat /var/log/c3os-agent.log")
+				} else {
+					out, _ = machine.SSHCommand("sudo systemctl status c3os-agent")
+				}
+				return out
+			}, 2*time.Minute, 1*time.Second).Should(
+				Or(
+					ContainSubstring("Starting c3os agent"),
+				))
+
+			Eventually(func() (out string) {
+				if os.Getenv("FLAVOR") == "alpine" {
+					out, _ = machine.SSHCommand("cat /var/log/c3os-agent.log")
+				} else {
+					out, _ = machine.SSHCommand("sudo systemctl status c3os-agent")
+				}
+				return out
+			}, 30*time.Minute, 1*time.Second).Should(
+				Or(
+					ContainSubstring("Configuring k3s-agent"),
+					ContainSubstring("Configuring k3s"),
+				))
 		})
 
 		It("propagate kubeconfig", func() {
