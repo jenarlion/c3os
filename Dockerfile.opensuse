@@ -106,7 +106,9 @@ RUN rm -rf installer.sh
 RUN systemctl enable nohang
 COPY overlay/files/ /
 
-RUN mkinitrd
+RUN kernel=$(ls /lib/modules | head -n1) && \
+    dracut -f "/boot/initrd-${kernel}" "${kernel}" && \
+    ln -sf "initrd-${kernel}" /boot/initrd
 
 ARG OS_NAME=c3OS
 ARG OS_VERSION=${K3S_VERSION}${C3OS_VERSION}
